@@ -1,0 +1,23 @@
+@startuml
+
+package "Browser" {
+  [DOM Tree]
+  [Canvas API]
+  [Download Manager]
+}
+
+package "Libraries" {
+  [html2pdf.js] <<facade>>
+  [html2canvas]
+  [jsPDF]
+}
+
+[User Code] --> [html2pdf.js] : 呼叫 html2pdf().from(...).save()
+
+[html2pdf.js] --> [html2canvas] : 要求將 DOM 區塊渲染成 Canvas/Image
+[html2pdf.js] --> [jsPDF] : 建立 PDF 文件\n加入由 html2canvas 產生的影像
+[html2canvas] --> [DOM Tree] : 讀取樣式與節點
+[html2canvas] --> [Canvas API] : 繪製畫面
+[jsPDF] --> [Download Manager] : 產生 Blob/檔案下載
+
+@enduml

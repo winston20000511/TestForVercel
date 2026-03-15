@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <title>html2pdf.js Demo - 教學範例</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0 0 10px;
+        }
+
+        .page-wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .toolbar {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+        }
+
+        .toolbar button {
+            padding: 8px 14px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: #fff;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #666;
+        }
+
+        #report-for-pdf {
+            width: 800px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+            background: #ffffff;
+            color: #111827;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+        }
+
+        #report-for-pdf h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        #report-for-pdf .subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        #report-for-pdf .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        #report-for-pdf table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0 8px;
+            font-size: 12px;
+        }
+
+        #report-for-pdf th,
+        #report-for-pdf td {
+            border: 1px solid #e5e7eb;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        #report-for-pdf th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+
+        #report-for-pdf .section-title {
+            margin-top: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            border-left: 3px solid #2563eb;
+            padding-left: 6px;
+        }
+
+        #report-for-pdf p {
+            font-size: 12px;
+            line-height: 1.6;
+            margin: 4px 0;
+        }
+
+        .pdf-page-break {
+            page-break-before: always;
+        }
+
+        .bad-area {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: #fee2e2;
+            border: 1px dashed #ef4444;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .bad-area strong {
+            color: #b91c1c;
+        }
+
+        @media (max-width: 900px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrap">
+        <div class="toolbar">
+            <button id="btn-generate" class="btn-primary">下載 PDF（正確示範）</button>
+            <button id="btn-generate-low" class="btn-outline">下載 PDF（低品質測試）</button>
+            <div class="hint">
+                示範：只匯出白底報表區塊 (#report-for-pdf)，不包含整個頁面與紅色警告區。
+            </div>
+        </div>
+
+        <div id="report-for-pdf">
+            <div>
+
+                <h1>示範：稽核報表輸出範本</h1>
+                <div class="subtitle">此範本用於教學 html2pdf.js 基本流程與常見問題。</div>
+
+                <div class="meta-row">
+                    <div>報表編號：RPT-2025-001</div>
+                    <div>醫院名稱：示範醫院 Demo Hospital</div>
+                    <div>建立日期：2025-11-08</div>
+                </div>
+                <div class="meta-row">
+                    <div>審核人員：王小明</div>
+                    <div>聯絡電話：(02) 1234-5678</div>
+                </div>
+
+                <div class="section-title">一、稽核重點摘要</div>
+                <p>本報表為示範用途，說明如何將特定區塊轉換為 PDF，而不依賴使用者自行操作瀏覽器列印功能。</p>
+                <p>請注意，此區塊使用固定寬度與簡單排版，以降低 html2canvas 渲染錯誤的風險。</p>
+
+                <div class="section-title">二、稽核項目列表（示範表格與多列內容）</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項次</th>
+                            <th>稽核項目</th>
+                            <th>說明</th>
+                            <th>結果</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 多塞幾列，拉長內容，方便看到切頁效果 -->
+                        <tr>
+                            <td>1</td>
+                            <td>文件完整性</td>
+                            <td>檢查所有必填欄位是否填寫完畢，格式是否一致。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>簽名與章戳</td>
+                            <td>確認相關負責人簽名與單位章戳是否齊全。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>照片佐證</td>
+                            <td>檢查附檔照片解析度是否足夠辨識，檔案可正常開啟。</td>
+                            <td>需改善</td>
+                            <td>部分圖片偏模糊。</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>資料一致性</td>
+                            <td>跨系統比對登錄資料是否有矛盾或遺漏。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>系統操作紀錄</td>
+                            <td>檢視 log 紀錄，確認無異常操作與未授權存取。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>備援與備份機制</td>
+                            <td>確認備援方案文件與實際執行紀錄。</td>
+                            <td>需改善</td>
+                            <td>建議補齊每月備份報告。</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>資安控管</td>
+                            <td>檢查帳號權限、密碼政策及異常警示機制。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>設備標示與清冊</td>
+                            <td>實地比對設備標籤與資產清冊是否一致。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>作業流程文件化</td>
+                            <td>檢查是否有標準作業流程(SOP)文件並定期更新。</td>
+                            <td>需改善</td>
+                            <td>部分單位 SOP 過期。</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>教育訓練紀錄</td>
+                            <td>確認相關人員受訓紀錄完整性。</td>
+                            <td>通過</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>透過這份表格，我們可以示範多列內容如何在 PDF 中自動換頁與保留清晰度。</p>
+
+                <!-- 手動切頁示範 -->
+                <div class="pdf-page-break"></div>
+
+                <div class="section-title">三、第二頁內容（手動 Page Break 示範）</div>
+                <p>這一段內容會被強制切到新的一頁，示範如何使用 <code>.pdf-page-break</code> 控制切頁。</p>
+                <p>實務建議在章節之間、表格與簽名區之間加入 page break，避免內容切在奇怪的位置。</p>
+
+                <div class="section-title">四、簽名區</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th style="width: 25%;">稽核人員簽名</th>
+                            <td style="height: 60px;"></td>
+                        </tr>
+                        <tr>
+                            <th>單位主管簽名</th>
+                            <td style="height: 60px;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p style="margin-top: 16px; font-size: 10px; color: #6b7280;">
+                    附註：此為教學範例，實務上可依需求加入浮水印、頁碼或公司 Logo。
+                </p>
+            </div>
+        </div>
+
+        <div class="bad-area">
+            <strong>這一塊是錯誤示範，不會被匯出。</strong><br>
+            用來提醒團隊：不要直接把整個網站畫面丟給 html2pdf。
+            請建立「專用的匯出容器」，控制排版、寬度與內容，
+            否則容易發生空白頁、被切一半、RWD 幻滅等問題。
+        </div>
+    </div>
+
+    <!-- html2pdf.js（含 html2canvas + jsPDF） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        document.getElementById('btn-generate').addEventListener('click', function () {
+            const element = document.getElementById('report-for-pdf');
+
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: 'audit-report-demo.pdf',
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                },
+                pagebreak: {
+                    mode: ['css', 'legacy'],
+                    before: '.pdf-page-break'
+                }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        });
+
+        document.getElementById('btn-generate-low').addEventListener('click', function () {
+            const element = document.getElementById('report-for-pdf');
+
+            const opt = {
+                margin: 10,
+                filename: 'audit-report-low-quality.pdf',
+                image: { type: 'jpeg', quality: 0.5 },
+                html2canvas: {
+                    scale: 1,
+                    useCORS: false
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                },
+                pagebreak: {
+                    mode: ['auto']
+                }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        });
+    </script>
+</body>
+
+</html>
